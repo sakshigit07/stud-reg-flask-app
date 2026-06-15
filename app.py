@@ -66,7 +66,7 @@ def register():
 
 # Requirement 3: Data Retrieval Route
 @app.route('/students', methods=['GET'])
-def show_students():
+def students():
     try:
         conn = get_db_connection()
         # dictionary=True maps column names to keys, which makes looping in Jinja HTML extremely clean
@@ -79,7 +79,7 @@ def show_students():
         conn.close()
         
         # Pass the retrieved data list to the view template
-        return render_template('students.html', students=students_list)
+        return render_template('students.html', students=students_data)
         
     except mysql.connector.Error as err:
         return f"Failed to retrieve data from database: {err.msg}", 500
