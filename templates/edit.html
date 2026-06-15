@@ -16,8 +16,8 @@
                     </div>
                     <div class="card-body">
                         
-                        {# Best practice: Use url_for passing the student ID dynamic parameter #}
-                        <form method="POST" action="{{ url_for('edit_student', id=student.id) }}"></form>
+                        {# Form opening wrapper fixed: removed the premature closing tag #}
+                        <form method="POST" action="{{ url_for('edit_student', id=student.id) }}">
                             <div class="mb-3">
                                 <label class="form-label">Name *</label>
                                 <input type="text" class="form-control" name="name" value="{{ student.name }}" required>
@@ -36,7 +36,6 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Address</label>
-                                {# Fixed the broken space in the textarea tag below #}
                                 <textarea class="form-control" name="address" rows="3">{{ student.address }}</textarea>
                             </div>
                             <div class="mb-3">

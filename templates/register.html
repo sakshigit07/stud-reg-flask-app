@@ -16,7 +16,6 @@
                     </div>
                     <div class="card-body">
                         
-                        {# Flash Messages for Success/Error Alerts #}
                         {% with messages = get_flashed_messages(with_categories=true) %}
                             {% if messages %}
                                 {% for category, message in messages %}
@@ -28,7 +27,6 @@
                             {% endif %}
                         {% endwith %}
 
-                        {# Updated Form Action to target the registration handler dynamically #}
                         <form method="POST" action="{{ url_for('register') }}">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name *</label>
