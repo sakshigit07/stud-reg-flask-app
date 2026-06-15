@@ -79,7 +79,7 @@ def students():
         conn.close()
         
         # Pass the retrieved data list to the view template
-        return render_template('students.html', students=students_data)
+        return render_template('students.html', students=students_list)
         
     except mysql.connector.Error as err:
         return f"Failed to retrieve data from database: {err.msg}", 500
