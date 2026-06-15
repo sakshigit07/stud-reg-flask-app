@@ -1,2 +1,2 @@
-Flask==2.3.2
-mysql-connector-python
+Flask>=3.1.0
+mysql-connector-python>=9.0.0
