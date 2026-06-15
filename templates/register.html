@@ -16,6 +16,7 @@
                     </div>
                     <div class="card-body">
                         
+                        {# Flash Messages for Success/Error Alerts #}
                         {% with messages = get_flashed_messages(with_categories=true) %}
                             {% if messages %}
                                 {% for category, message in messages %}
@@ -27,7 +28,8 @@
                             {% endif %}
                         {% endwith %}
 
-                        <form method="POST" action="/">
+                        {# Updated Form Action to target the registration handler dynamically #}
+                        <form method="POST" action="{{ url_for('register') }}">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name *</label>
                                 <input type="text" class="form-control" id="name" name="name" required>
@@ -54,7 +56,7 @@
                             </div>
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">Submit Registration</button>
-                                <a href="/students" class="btn btn-outline-secondary">View Registered Students</a>
+                                <a href="{{ url_for('students') }}" class="btn btn-outline-secondary">View Registered Students</a>
                             </div>
                         </form>
                     </div>

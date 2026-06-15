@@ -10,7 +10,7 @@
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">Registered Student Records</h2>
-            <a href="/" class="btn btn-primary">Add New Student</a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary">Add New Student</a>
         </div>
 
         <div class="card shadow">
@@ -26,6 +26,7 @@
                                 <th>Course</th>
                                 <th>Address</th>
                                 <th>Emergency Contact</th>
+                                <th class="text-center">Actions</th> {# Added 8th header column for design balance #}
                             </tr>
                         </thead>
                         <tbody>
@@ -40,10 +41,10 @@
                                     <td>{{ student.address if student.address else '-' }}</td>
                                     <td>{{ student.contact if student.contact else '-' }}</td>
                                     <td>
-                                        <div class="d-flex gap-2">
-                                            <a href="/edit/{{ student.id }}" class="btn btn-sm btn-warning">Edit</a>
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn btn-sm btn-warning">Edit</a>
                                             
-                                            <form action="/delete/{{ student.id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this student record?');">
+                                            <form action="{{ url_for('delete_student', student_id=student.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this student record?');">
                                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                                             </form>
                                         </div>
@@ -61,5 +62,8 @@
             </div>
         </div>
     </div>
+
+    {# Added the JavaScript bundle script below #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
