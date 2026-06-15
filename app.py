@@ -10,7 +10,7 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'supersecretdevelopmentkey')
 # Database configuration
 # Using os.environ.get allows you to transition seamlessly from local testing to EC2/Docker deployment
 db_config = {
-    'host': os.environ.get('DB_HOST', 'db'),
+    'host': os.environ.get('DB_HOST', '172.31.43.67'),
     'user': os.environ.get('DB_USER', 'root'),
     'password': os.environ.get('DB_PASSWORD', 'root@stud-reg-flask-app'),
     'database': os.environ.get('DB_DATABASE', 'studentsdb')

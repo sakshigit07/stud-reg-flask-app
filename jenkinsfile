@@ -5,6 +5,7 @@ pipeline {
         REMOTE_USER = 'ubuntu'
         BRANCH = 'master'
         SERVER_IP = '172.31.37.102'
+        DB_SERVER_IP = '172.31.43.67' // Added DB Server IP address variable
         REPO_URL = 'https://github.com/sakshigit07/stud-reg-flask-app.git'
         SSH_CREDENTIALS = 'flask-app-key'
         REMOTE_PATH = '/home/ubuntu/stud-reg-flask-app'
@@ -20,6 +21,30 @@ pipeline {
                 sh 'test -f app.py || (echo "app.py missing!" && exit 1)'
             }
         }
+        
+        // --- NEW AUTOMATED DATABASE PROVISIONING STAGE ---
+        stage ('provision mysql server') {
+            steps {
+                sshagent(credentials: [SSH_CREDENTIALS]) {
+                    sh '''
+                    echo "Connecting to MySQL Database Instance..."
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${DB_SERVER_IP} << 'EOF'
+                        # Check if mysql command exists; if not, install it
+                        if ! command -v mysql &> /dev/null; then
+                            echo "MySQL not found. Installing MySQL Server..."
+                            sudo apt-get update
+                            sudo apt-get install -y mysql-server
+                            sudo systemctl enable --now mysql
+                            echo "MySQL Server successfully installed and started!"
+                        else
+                            echo "MySQL Server is already installed."
+                        fi
+EOF
+                    '''
+                }
+            }
+        }
+
         stage ('deploy on flask server') {
             steps {
                 sshagent(credentials: [SSH_CREDENTIALS]) {
@@ -34,7 +59,6 @@ pipeline {
                         
                         echo "setting up virtual environment" 
                         python3 -m venv venv
-
 
                         echo "upgrading adn installing requirements"
                         ./venv/bin/pip install --upgrade pip   
@@ -53,7 +77,7 @@ pipeline {
                         echo "Launching application in background..."
                         nohup ./venv/bin/python3 app.py > app.log 2>&1 &
                                 
-                                echo "Application successfully started in background!"
+                        echo "Application successfully started in background!"
 EOF
                     '''
                 }
