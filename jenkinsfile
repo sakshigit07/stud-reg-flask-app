@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+
+    environment {
+        REMOTE_USER = 'ubuntu'
+        BRANCH = 'master'
+        SERVER_IP = '172.31.37.102'
+        REPO_URL = 'https://github.com/sakshigit07/stud-reg-flask-app.git'
+        SSH_CREDENTIALS = 'flask-app-key'
+        REMOTE_PATH = '/home/ubuntu/stud-reg-flask-app'
+    }
+    stages {
+        stage ('Fetch code from github') {
+            steps {
+                checkout scm
+            }
+        }
+        stage ('verify files') {
+            steps {
+                sh 'test -f app.py || (echo "app.py missing!" && exit 1)'
+            }
+        }
+        stage ('deploy on flask server') {
+            steps {
+                sshagent(credentials: [SSH_CREDENTIALS]) {
+                    sh '''
+                    # Ensure directory exists and transfer files
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} "mkdir -p ${REMOTE_PATH}"
+                    scp -o StrictHostKeyChecking=no -r * ${REMOTE_USER}@${SERVER_IP}:${REMOTE_PATH}
+
+                    # Connect to the server using the correct SERVER_IP variable
+                    ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${SERVER_IP} << 'EOF'
+                        cd /home/ubuntu/stud-reg-flask-app
+                        
+                        echo "setting up virtual environment" 
+                        python3 -m venv venv
+
+
+                        echo "upgrading adn installing requirements"
+                        ./venv/bin/pip install --upgrade pip   
+                        ./venv/bin/pip install -r requirements.txt
+
+                        echo "Cleaning up previous application instance running on port 5000..."
+                        pkill -f "python3 app.py" || true
+
+                        echo "exporting env variables"
+                        export DB_HOST="172.31.43.67"
+                        export DB_USER="root"
+                        export DB_PASSWORD="root@stud-reg-flask-app"
+                        export DB_DATABASE="studentsdb"
+                        export FLASK_SECRET_KEY="supersecretdevelopmentkey"
+                        
+                        echo "Launching application in background..."
+                        nohup ./venv/bin/python3 app.py > app.log 2>&1 &
+                                
+                                echo "Application successfully started in background!"
+EOF
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '🎉 Application deployed successfully!'
+        }
+        failure {
+            echo '❌ Deployment failed. Please verify your Jenkins logs and SSH connection limits.'
+        }
+    }
+}
