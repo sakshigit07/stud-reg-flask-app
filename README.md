@@ -72,7 +72,7 @@ stud-reg-flask-app
 - Add credentials : Settings > Credentials > add credentials
     - Select SSH username with private key.
     - Enter ID as **`flask-app-key`**.
-    - Username as `Ubuntu`.
+    - Username as `ubuntu`.
     - Enter private key.
         - Open terminal > Run command > cat <private-filename> > copy & paste.
     - Click **save**.
